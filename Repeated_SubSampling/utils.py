@@ -55,7 +55,7 @@ def run_bootstrap_analysis(df, n_subjects_per_group, n_bootstrap, n_jobs=-1):
 
 def run_bootstrap_allgrps(df, n_bootstrap, group_list=None, sample_size_list=None, sig_threshold=0.05, samplesize_bin=10):
     if not group_list:
-        group_list = ['ASD', 'ADHD', 'Anxiety', 'Learning']
+        group_list = ['ASD', 'ADHD', 'ANX', 'LD']
     if not sample_size_list:
         sample_size_list = {'ASD': 604, 'ADHD': 624, 'Learning': 237, 'Anxiety': 323}
 
@@ -213,13 +213,6 @@ def heatmap_bootsraps(path_values,col, group_list = ['ASD', 'ADHD', 'Anxiety', '
         fig.update_yaxes(tickmode='array', tickvals=df.columns[::3])
         fig.update_xaxes(range=[0, 100], row=1, col=2)
 
-        fig.update_layout(
-            title=dict(text="Your Title Here", font=dict(size=28)),  # Increase title font size
-            xaxis=dict(title=dict(text="X Axis Label", font=dict(size=18))),  # X-axis label font size
-            yaxis=dict(title=dict(text="Y Axis Label", font=dict(size=18))),  # Y-axis label font size
-            font=dict(size=16),  # Default font size for other elements
-            legend=dict(font=dict(size=20))  # Legend font size
-        )
 
 
         # Display the figure
