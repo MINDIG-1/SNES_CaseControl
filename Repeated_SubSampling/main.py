@@ -23,6 +23,9 @@ if __name__ == '__main__':
         path_values = list(row_df[['featureType','bucket','fileName','featureName']].values)
         print(row_df['featureName'], row_df['group'])
 
+        nb_bootstraps=100
+        samplesize_bin=100
+
         df = pd.read_csv(f"IO_files/Inputs/{path_values[0]}/{path_values[1]}/{path_values[2]}")
 
         df = df[(df['age']>=5) & (df['age']<=18)]
@@ -38,16 +41,18 @@ if __name__ == '__main__':
         df.insert(dataset_col_pos, 'dataset_names', df.pop('dataset_names'))
 
         df_sub = df[['global_id','age','sex','group','dataset', row_df['featureName']]].rename(columns={row_df['featureName']: 'feature'})
-        pval, bin_val, cohenval = run_bootstrap_allgrps(df_sub, 100, [row_df['group']], sample_size_list, samplesize_bin=100)
+        pval, bin_val, cohenval = run_bootstrap_allgrps(df_sub, nb_bootstraps, [row_df['group']], sample_size_list, samplesize_bin=samplesize_bin)
 
         file_path = f"IO_files/Outputs/{path_values[0]}/{path_values[1]}/numbers/{path_values[0]}/{row_df['featureName']}"
         if not os.path.exists(file_path):
             os.makedirs(file_path, exist_ok=True)
         save_to_csv(pval, row_df['group'],file_path, 'pval')
         save_to_csv(bin_val, row_df['group'],file_path, 'binval')
-        save_to_csv(cohenval, row_df['group'],file_path, 'cohenval')
+        save_to_csv(cohenval, row_df['group'],file_path, 'es')
         crossed_file_path = 'IO_files/Outputs/Crossed.txt'
-        over_threshold(bin_val,row_df['group'],crossed_file_path,f"{path_values[0]},{path_values[1]},{path_values[2]},{row_df['featureName']}")
+        # over_threshold(data_dict, group, file_path,featureType, fileName, feature_name, nb_bootstraps=1000, m = 95):
+        over_threshold(bin_val, row_df['group'],crossed_file_path,row_df['featureType'], row_df['fileName'], row_df['featureName'], nb_bootstraps)
+        # over_threshold(bin_val,row_df['group'],crossed_file_path,f"{path_values[0]},{path_values[1]},{path_values[2]},{row_df['featureName']}")
         heatmap_bootsraps(path_values, row_df['featureName'], [row_df['group']])
         print(f"Runtime: {time.time()-t1:.2f}s | {(time.time()-t1)/3600:.2f} hrs")
 

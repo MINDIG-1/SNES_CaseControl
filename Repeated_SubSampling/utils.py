@@ -115,7 +115,7 @@ def save_to_csv(data_dict, group, file_path, file_prefix):
     df = pd.DataFrame(np.array(values).T, columns=columns)
     df.to_csv(f'{file_path}/{file_prefix}-{group}.csv', index=False)
 
-def over_threshold(data_dict, group, file_path, feature_name, nb_bootstraps=1000, m = 95):
+def over_threshold(data_dict, group, file_path,featureType, fileName, feature_name, nb_bootstraps=1000, m = 95):
     columns = []
     values = []
     for key, value in data_dict.items():
@@ -125,10 +125,18 @@ def over_threshold(data_dict, group, file_path, feature_name, nb_bootstraps=1000
     df = pd.DataFrame(np.array(values).T, columns=columns)
     column_sums = df.sum()
     column_sums = column_sums*100/nb_bootstraps
+    # if not column_sums[column_sums > m].empty:
+    #     sample_size_crossed = column_sums[column_sums > m].index[0]
+    #     with open(file_path, 'a') as file:
+    #         file.write(f"{feature_name},{group},{sample_size_crossed}\n")
+
     if not column_sums[column_sums > m].empty:
         sample_size_crossed = column_sums[column_sums > m].index[0]
         with open(file_path, 'a') as file:
-            file.write(f"{feature_name},{group},{sample_size_crossed}\n")
+            file.write(f"{featureType},{fileName},{feature_name},{group},yes,{sample_size_crossed},{column_sums.iloc[0]:.2f},{column_sums.iloc[-1]:.2f},{column_sums.iloc[-1]-column_sums.iloc[0]:.2f}\n")
+    else:
+        with open(file_path, 'a') as file:
+            file.write(f"{featureType},{fileName},{feature_name},{group},no,NaN,{column_sums.iloc[0]:.2f},{column_sums.iloc[-1]:.2f},{column_sums.iloc[-1]-column_sums.iloc[0]:.2f}\n")
 
 def over_threshold_fast(data_dict, group, file_path, feature_name, nb_bootstraps=1000, m = 95):
     columns = []
